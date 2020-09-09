@@ -11,8 +11,6 @@ describe("TestRail Reporter Test", () => {
                     assertion: testAssertion
                 })
             }});
-            // reporter.handleTests(createTestData())
-            // console.log(createTestData()[0].assertions)
         })
     })
 })
