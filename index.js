@@ -49,7 +49,7 @@ class TestRailReporter {
                 return;
             }
             
-            /Get Plan Id if updating to test plan
+            //Get Plan Id if updating to test plan
             if(planName.length > 0) {
                 let planId;
                 testrail.getPlans(projectId)
