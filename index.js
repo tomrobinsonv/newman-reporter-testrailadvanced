@@ -57,14 +57,14 @@ class TestRailReporter {
                 testrail.getSuites(projectId)
                 .then(res => {
                     const suites = res.body;
-                    if(suiteId && !(suites.find(suite => suite.id === suiteId))) suiteId = suites.find(suite => suite.is_master === true).id;
-                    testrail.getConfigs(projectId)
+                    if(suiteId && !(suites.find(suite => suite.id === suiteId))) suiteId = suites.find(suite => suite.is_master === true).id; 
+                    testrail.getConfigs(56)
                     .then(res => {
                         const configGroups = res.body;
                         const apiCongfigGroup = configGroups.find(configGroup => configGroup.name.toLowerCase().includes('postman') || configGroup.name.toLowerCase().includes('api'));
                         if(!apiCongfigGroup) {
                             console.log('please add postman config to testrail'); return;
-                        } else configIds.push(apiCongfigGroup.configs.find(apiConfig => apiCongfig.name.toLowerCase().includes('postman'))).id;
+                        } else configIds.push(apiCongfigGroup.configs.find(config => config.name.toLowerCase().includes('postman'))).id;
                         testrail.getPlans(projectId)
                         .then(res => {
                             console.log("Looking for test plan to update...");
