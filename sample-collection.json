@@ -1,0 +1,82 @@
+{
+	"info": {
+		"_postman_id": "6ea48099-bba1-43ed-bc74-e9ba768aaaf2",
+		"name": "Sample Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Get Collections",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"id": "71bbbcf8-ea31-40cd-9d4b-02e566a8e7dc",
+						"exec": [
+							"pm.test(\"C1 C2 C3 Status code is 200\", function () {",
+							"    pm.response.to.have.status(200);",
+							"});"
+						],
+						"type": "text/javascript"
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "PMAK-5e734f0edcfe000029b1d58e-4827a0dc1d608015c19d8be8faba98dbe8",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "X-Api-Key",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "https://api.getpostman.com/collections/",
+					"protocol": "https",
+					"host": [
+						"api",
+						"getpostman",
+						"com"
+					],
+					"path": [
+						"collections",
+						""
+					]
+				}
+			},
+			"response": []
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"id": "d4bb3c5f-8876-46a7-8627-7fa2032eff25",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"id": "2800fcff-796c-4b82-901f-da7c316ebda5",
+				"type": "text/javascript",
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"protocolProfileBehavior": {}
+}
