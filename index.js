@@ -4,7 +4,7 @@ const axios = require('axios');
 class TestRailReporter {
     constructor(emitter, reporterOptions) {
         if(!reporterOptions) reporterOptions = {};
-        const host = process.env.TESTRAIL_HOST || reporterOptions.host || '';
+        let host = process.env.TESTRAIL_HOST || reporterOptions.host || '';
         const user = process.env.TESTRAIL_USERNAME || reporterOptions.username || '';
         const password = process.env.TESTRAIL_PASSWORD || process.env.TESTRAIL_API_KEY || reporterOptions.password || '';
         const projectId = process.env.TESTRAIL_PROJECT_ID || reporterOptions.projectId || '';
@@ -136,6 +136,34 @@ class TestRailReporter {
             }
             
         });
+        // const runDetails = {
+            //     name: runName,
+            //     description: `${runName} - ${new Date().toISOString()}`,
+            //     suiteId: suiteId,
+            //     include_all: includeAll,
+            //     case_ids: allCaseIds
+            // };
+
+            // testrail.addRun(projectId, runDetails)
+            //     .then((result) => {
+            //         console.log('creating run...', result.response.statusMessage)
+            //         console.log(result.body.url);
+            //         var run_id = result.body.id;
+            //         testrail.addResultsForCases(run_id, results)
+            //             .then((result) => {
+            //                 console.log('adding results...', result.response.statusMessage)
+            //                 testrail.closeRun(run_id)
+            //                     .then((result) => {
+            //                         console.log('closing run...', result.response.statusMessage)
+            //                     }).catch((error) => {
+            //                         console.log(error.message);
+            //                     });
+            //             }).catch((error) => {
+            //                 console.log(error.message);
+            //             });
+            //     }).catch((error) => {
+            //         console.log(error.message);
+            //     });
     }
 }
 
