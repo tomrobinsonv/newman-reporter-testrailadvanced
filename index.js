@@ -91,12 +91,12 @@ class TestRailReporter {
                                         include_all: includeAll,
                                         case_ids: allCaseIds,
                                         suite_id: suiteId,
-                                        config_ids: [2],
+                                        config_ids: configIds,
                                         runs: [
                                             {
                                                 include_all: includeAll,
                                                 case_ids: allCaseIds,
-                                                config_ids: [2],
+                                                config_ids: configIds,
                                             }
                                         ]
                                     }
@@ -121,12 +121,12 @@ class TestRailReporter {
                                     include_all: includeAll,
                                     case_ids: allCaseIds,
                                     suite_id: suiteId,
-                                    config_ids: [2],
+                                    config_ids: configIds,
                                     runs: [
                                         {
                                             include_all: includeAll,
                                             case_ids: allCaseIds,
-                                            config_ids: [2],
+                                            config_ids: configIds,
                                         }
                                     ]
                                 };
