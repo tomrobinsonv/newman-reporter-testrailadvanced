@@ -16,6 +16,8 @@ class TestRailReporter {
         const baseUrl =  `${host}/index.php?/api/v2/`;
         const allCaseIds = [];
         const results = [];
+        let configIds = [];
+
         if (!(host && user && password && projectId)) {
             console.log('please provide testrail details');
             return;
@@ -57,20 +59,18 @@ class TestRailReporter {
                     console.log(res)
                     const suites = res.body;
                     if(suiteId && !(suites.find(suite => suite.id === suiteId))) suiteId = suites.find(suite => suite.is_master === true).id;
-                    testrail.getPlans(projectId)
+                    testrail.getConfigs(projectId)
+                    .then(res => {
+                        const configGroups = res.body;
+                        const apiCongfigGroup = configGroups.find(configGroup => configGroup.name.toLowerCase().includes('postman') || configGroup.name.toLowerCase().includes('api'));
+                        const postmanConfigId = apiCongfigGroup.configs.find(apiConfig => apiCongfig.name.toLowerCase().includes('postman')).id
+                        testrail.getPlans(projectId)
                         .then(res => {
                             console.log("Looking for test plan to update...");
                             //Get plan To Update
                             let expectedPlanName = `${planName} - ${new Date().toISOString().slice(0, 10)}`;
                             let plansForProject = res.body;
                             planId = plansForProject.find(plan => plan.name === expectedPlanName).id;
-                        
-                            // for(let i = 0; i < plansForProject.length; i++) {
-                            //     if(plansForProject[i].name === expectedPlanName) {
-                            //         planId = plansForProject[i].id;
-                            //         break;
-                            //     }
-                            // }
 
                             if(!planId) {
                                 //Create plan and add run if doesn't exist
@@ -139,6 +139,8 @@ class TestRailReporter {
                                 })
                                 .catch(err => console.log("ADD PLAN ENTRY ERROR: ", err));
                             }
+                        })
+                        .catch(err => console.log(err))
                     })
                     .catch(err => console.log('ERROR: ', err));
                 })
