@@ -49,6 +49,92 @@ class TestRailReporter {
                 return;
             }
             
+            /Get Plan Id if updating to test plan
+            if(planName.length > 0) {
+                let planId;
+                testrail.getPlans(projectId)
+                    .then(res => {
+                        console.log("Looking for test plan to update...");
+                        //Get plan To Update
+                        let expectedPlanName = `${planName} - ${new Date().toISOString().slice(0, 10)}`;
+                        let plansForProject = res.body;
+                        for(let i = 0; i < plansForProject.length; i++) {
+                            if(plansForProject[i].name === expectedPlanName) {
+                                planId = plansForProject[i].id;
+                                break;
+                            }
+                        }
+
+                    if(!planId) {
+                        //Create plan and add run if doesn't exist
+                        const planDetails = {
+                            name: `${planName} - ${new Date().toISOString().slice(0, 10)}`,
+                            description: 'Test Runs For Automated Tests',
+                            entries: []
+                        };
+                        testrail.addPlan(projectId, planDetails)
+                        .then(res => {
+                            //Create entry for newly created plan and test run
+                            console.log("Adding plan to project...");
+                            const createdPlan = res.body
+                            const entryDetails = {
+                                name: `Postman Automation Test - ${new Date().toISOString().slice(0, 19).split('T').join(' ')}`,
+                                description: 'Postman Automation',
+                                include_all: includeAll,
+                                case_ids: allCaseIds,
+                                suite_id: suiteId,
+                                config_ids: [2],
+                                runs: [
+                                    {
+                                        include_all: includeAll,
+                                        case_ids: allCaseIds,
+                                        config_ids: [2],
+                                    }
+                                ]
+                            }
+                            testrail.addPlanEntry(createdPlan.id, entryDetails)
+                            .then(res => {
+                                console.log("Adding new entry to newly created test plan...")
+                                const createdEntry = res.body;
+                                testrail.addResultsForCases(createdEntry.runs[0].id, results)
+                                .then(result => console.log('adding results...', result.response.statusMessage));
+                            })
+                            .catch(err => console.log(err));
+                        })
+                        .catch(err => console.log("ADD PLAN ERROR: ", err));
+                    } else {
+                        //Update plan if does exist
+                        console.log("Updating Automation Test Plan...")
+
+                        //Create entry for new test run
+                        const entryDetails = {
+                            name: `Postman Automation Test - ${new Date().toISOString().slice(0, 19).split('T').join(' ')}`,
+                            description: 'Postman Automation',
+                            include_all: includeAll,
+                            case_ids: allCaseIds,
+                            suite_id: suiteId,
+                            config_ids: [2],
+                            runs: [
+                                {
+                                    include_all: includeAll,
+                                    case_ids: allCaseIds,
+                                    config_ids: [2],
+                                }
+                            ]
+                        }
+                        testrail.addPlanEntry(planId, entryDetails)
+                        .then(res => {
+                            console.log("Adding new entry to existing test plan...")
+                            const createdEntry = res.body;
+                            testrail.addResultsForCases(createdEntry.runs[0].id, results)
+                            .then(result => console.log('adding results...', result.response.statusMessage));
+                        })
+                        .catch(err => console.log("ADD PLAN ENTRY ERROR: ", err));
+                    }
+                })
+                .catch(err => console.log('ERROR: ', err));
+            }
+            
         });
     }
 }
