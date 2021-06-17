@@ -18,7 +18,6 @@
   },
   "homepage": "https://github.com/tomrobinsonv/newman-reporter-testrailextra#readme",
   "dependencies": {
-    "axios": "^0.20.0",
     "testrail-api": "^1.3.6"
   },
   "devDependencies": {
