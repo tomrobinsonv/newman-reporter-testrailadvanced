@@ -2,29 +2,42 @@ const Testrail = require('testrail-api');
 
 class PostmanTestRailAdvancedReporter {
     constructor(emitter, reporterOptions) {
-        // console.log(emitter, "\n", reporterOptions)
+        // console.log("EMITTER ", emitter._events,"\n\n beforeDone",Object.keys(emitter), typeof emitter.on)
+        // emitter._events.beforeDone.fn();
         if(!reporterOptions) reporterOptions = {};
-        let host = process.env.TESTRAIL_HOST || reporterOptions.host || '';
+        let host = process.env.TESTRAIL_DOMAIN || reporterOptions.host || '';
         const user = process.env.TESTRAIL_USERNAME || reporterOptions.username || '';
-        const password = process.env.TESTRAIL_PASSWORD || process.env.TESTRAIL_API_KEY || reporterOptions.password || '';
-        const projectId = process.env.TESTRAIL_PROJECT_ID || reporterOptions.projectId || '';
+        const password = process.env.TESTRAIL_PASSWORD || process.env.TESTRAIL_APIKEY || reporterOptions.password || '';
+        const projectId = process.env.TESTRAIL_PROJECTID || reporterOptions.projectId || '';
         let suiteId = process.env.TESTRAIL_SUITE_ID || reporterOptions.suiteId || 1;
-        const planName = process.env.TESTRAIL_PLAN_NAME || reporterOptions.planName || '';
+        const planName = process.env.TESTRAIL_PLAN_NAME || reporterOptions.planName || 'Newman Automation Plan';
         const runName = process.env.TESTRAIL_RUN_NAME || reporterOptions.runName || 'Automation Run';
-        const includeAll = ((process.env.TESTRAIL_INCLUDE_ALL === true) || (process.env.TESTRAIL_INCLUDE_ALL === undefined))
-        && ((reporterOptions.includeAll === true) || (reporterOptions.includeAll === undefined));
+        const includeAll = process.env.TESTRAIL_INCLUDEALL === true || reporterOptions.includeAll === true || false;
         const baseUrl =  `${host}/index.php?/api/v2/`;
         const allCaseIds = [];
         const results = [];
         let configIds = [];
     
-        if (!(host && user && password && projectId)) {
+        const requiredOptions = [host, user, password, projectId];
+
+        let hasMissingOptions = false;
+        requiredOptions.forEach((option) => {
+          if (option === undefined || option.length === 0) {
+            console.error(
+              `\nnewman-reporter-testrailadvanced: A required environment variable ${option} was not found.`,
+            );
+            hasMissingOptions = true;
+
+          }
+        });
+
+        if (hasMissingOptions) {
             console.log('please provide testrail details');
             return;
         }
-    
+
         if(host.length > 0 && !host.startsWith('https://')) host = 'https://' + host;
-    
+
         let testrail = new Testrail({
             host: host,
             user: user,
@@ -45,14 +58,18 @@ class PostmanTestRailAdvancedReporter {
                 allCaseIds.push(caseId);
             });
         });
-    
-        emitter.on('beforeDone', (err) => {
-            if (err) {
+        
+        emitter.on('done', (err, o) => {
+
+            if(allCaseIds.length === 0) {
+                console.error('\nnewman-reporter-testrailadvanced: No test cases were found.');
                 return;
             }
             
             //Get Plan Id if updating to test plan
-            if(planName.length > 0) {
+            console.log("plan name", planName)
+            // if(planName.length < 0) {
+                // console.log("No Plan name given")
                 let planId;
                 testrail.getSuites(projectId)
                 .then(res => {
@@ -63,16 +80,17 @@ class PostmanTestRailAdvancedReporter {
                         const configGroups = res.body;
                         const apiCongfigGroup = configGroups.find(configGroup => configGroup.name.toLowerCase().includes('postman') || configGroup.name.toLowerCase().includes('api'));
                         if(!apiCongfigGroup) {
-                            console.log('please add postman config to testrail'); return;
+                            console.log('please add postman config to testrail'); 
+                            return;
                         } else configIds.push(apiCongfigGroup.configs.find(config => config.name.toLowerCase().includes('postman')).id);
                         testrail.getPlans(projectId)
                         .then(res => {
                             console.log("Looking for test plan to update...");
                             //Get plan To Update
-                            let expectedPlanName = `${planName} - ${new Date().toISOString().slice(0, 10)}`;
+                            let expectedPlanName = planName || `${planName} - ${new Date().toISOString().slice(0, 10)}`;
                             let plansForProject = res.body;
-                            planId = plansForProject.find(plan => plan.name === expectedPlanName).id;
-    
+                            const planToAddTo = plansForProject.plans.find(plan => plan.name === expectedPlanName);
+                            if(planToAddTo) planId = planToAddTo.id;
                             if(!planId) {
                                 //Create plan and add run if doesn't exist
                                 const planDetails = {
@@ -91,12 +109,12 @@ class PostmanTestRailAdvancedReporter {
                                         include_all: includeAll,
                                         case_ids: allCaseIds,
                                         suite_id: suiteId,
-                                        config_ids: configIds,
+                                        // config_ids: configIds,
                                         runs: [
                                             {
                                                 include_all: includeAll,
                                                 case_ids: allCaseIds,
-                                                config_ids: configIds,
+                                                // config_ids: configIds,
                                             }
                                         ]
                                     }
@@ -121,12 +139,12 @@ class PostmanTestRailAdvancedReporter {
                                     include_all: includeAll,
                                     case_ids: allCaseIds,
                                     suite_id: suiteId,
-                                    config_ids: configIds,
+                                    // config_ids: configIds,
                                     runs: [
                                         {
                                             include_all: includeAll,
                                             case_ids: allCaseIds,
-                                            config_ids: configIds,
+                                            // config_ids: configIds,
                                         }
                                     ]
                                 };
@@ -146,9 +164,9 @@ class PostmanTestRailAdvancedReporter {
                     .catch(err => console.log('ERROR: ', err));
                 })
                 .catch(err => console.log(err))
-            }
-            
-        });
+            // }
+        })    
+        // });
     };
 };
     // const runDetails = {
