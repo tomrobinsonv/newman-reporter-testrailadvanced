@@ -53,12 +53,12 @@ You may also set some or all of these variables using bash exports or by declari
 
 ### Run newman with the reporter option
 
-`-r testrail`
+`-r testrailadvanced`
 
 Example:
 
 ```
 TESTRAIL_DOMAIN=example.testrail.com TESTRAIL_USERNAME=exampleuser 
 TESTRAIL_APIKEY=yourkey TESTRAIL_PROJECTID=99 TESTRAIL_TITLE="Dev-API Regression" 
-newman run my-collection.postman_collection.json -r testrail,cli
+newman run my-collection.postman_collection.json -r testrailadvanced,cli
 ```
