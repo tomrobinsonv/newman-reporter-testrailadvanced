@@ -11,7 +11,7 @@ class PostmanTestRailAdvancedReporter {
         const projectId = process.env.TESTRAIL_PROJECTID || reporterOptions.projectId || '';
         let suiteId = process.env.TESTRAIL_SUITE_ID || reporterOptions.suiteId || 1;
         const planName = process.env.TESTRAIL_PLAN_NAME || reporterOptions.planName || 'Newman Automation Plan';
-        const runName = process.env.TESTRAIL_RUN_NAME || reporterOptions.runName || 'Automation Run';
+        const runName = process.env.TESTRAIL_RUN_NAME || reporterOptions.runName || `Postman Automation Test - ${new Date().toISOString().slice(0, 19).split('T').join(' ')}`;
         const includeAll = process.env.TESTRAIL_INCLUDEALL === true || reporterOptions.includeAll === true || false;
         const baseUrl =  `${host}/index.php?/api/v2/`;
         const allCaseIds = [];
@@ -104,7 +104,7 @@ class PostmanTestRailAdvancedReporter {
                                     console.log("Adding plan to project...");
                                     const createdPlan = res.body
                                     const entryDetails = {
-                                        name: `Postman Automation Test - ${new Date().toISOString().slice(0, 19).split('T').join(' ')}`,
+                                        name: runName,
                                         description: 'Postman Automation',
                                         include_all: includeAll,
                                         case_ids: allCaseIds,
@@ -134,7 +134,7 @@ class PostmanTestRailAdvancedReporter {
     
                                 //Create entry for new test run
                                 const entryDetails = {
-                                    name: `Postman Automation Test - ${new Date().toISOString().slice(0, 19).split('T').join(' ')}`,
+                                    name: runName,
                                     description: 'Postman Automation',
                                     include_all: includeAll,
                                     case_ids: allCaseIds,
